@@ -1,0 +1,27 @@
+host: xubu
+server_name: xubu
+port: 389
+use_ssl: false
+insecure_skip_verify: true
+skip_tls: true
+base: "dc=planetexpress,dc=com"
+attributes:
+  - cn
+  - sn
+  - mail
+  - displayName
+  - uid
+attribute_map:
+  full_name: cn
+  username: uid
+  email: mail
+  first_name: sn
+email_attributes:
+  - mail
+user_filter: (uid=%s)
+uid: uid
+group_member_attribute: dn
+group_filter: "(member=%s)"
+group_name_attribute: cn
+bind_dn: "cn=admin,dc=planetexpress,dc=com"
+bind_password: "GoodNewsEveryone"
