@@ -47,10 +47,15 @@ func (p *PoolConn) MarkUnusable() {
 }
 
 func (p *PoolConn) AutoClose(err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Debugf("rescued panic in (p *PoolConn) AutoClose %s", r)
+		}
+	}()
 	for _, code := range p.closeAt {
 		if ldap.IsErrorWithCode(err, code) {
 			p.GetLogger().Debugf("Marking LDAP Connection as Unusable due to code %d", code)
-			p.MarkUnusable()
+			p.unusable = true
 			return
 		}
 	}

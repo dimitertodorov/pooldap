@@ -73,7 +73,7 @@ func NewChannelPool(initialCap, maxCap int, poolType PoolType, factory PoolFacto
 		poolType:           poolType,
 		factory:            factory,
 		closeAt:            closeAt,
-		aliveChecks:        false,
+		aliveChecks:        true,
 		parentClient:       client,
 		initialConnections: initialCap,
 		maxConnections:     maxCap,
@@ -127,7 +127,7 @@ func (c *channelPool) Get() (*PoolConn, error) {
 			return c.wrapConn(conn, c.closeAt), nil
 		}
 
-		c.GetLogger().Infof("connection dead\n")
+		c.GetLogger().Infof("connection dead")
 		conn.Close()
 		return c.NewConn()
 	}
@@ -217,13 +217,11 @@ func (c *channelPool) RefillPool() {
 		for i := c.Len(); i < c.initialConnections; i++ {
 			conn, err := c.NewConn()
 			if err != nil {
-				conn.MarkUnusable()
 				conn.Close()
 				c.GetLogger().Error("could not refresh connection")
 			} else {
 				c.put(conn.Conn)
 			}
-
 		}
 	}
 }
