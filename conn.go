@@ -20,6 +20,11 @@ func (p *PoolConn) Start() {
 
 // Close() puts the given connects back to the pool instead of closing it.
 func (p *PoolConn) Close() {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Errorf("Recovered while closing LDAP Connection %s", r)
+		}
+	}()
 	if p.unusable {
 		p.GetLogger().Infof("Closing unusable connection")
 		if p.Conn != nil {
